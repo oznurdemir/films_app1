@@ -1,5 +1,7 @@
+import 'package:films_app/ui/cubit/films_cubit.dart';
 import 'package:films_app/ui/views/detail.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../data/entity/films.dart';
 
@@ -12,35 +14,22 @@ class Homepage extends StatefulWidget {
 
 class _HomepageState extends State<Homepage> {
 
-  Future<List<Films>> load_films() async{
-    var filmList = <Films>[];
-    var f1 = Films(id: 1,ad: "Anadoluda", image: "anadoluda.png", price: 23);
-    var f2 = Films(id: 2,ad: "Django", image: "django.png", price: 23);
-    var f3 = Films(id: 3,ad: "Inception", image: "inception.png", price: 23);
-    var f4 = Films(id: 4,ad: "Interstellar", image: "interstellar.png", price: 23);
-    var f5 = Films(id: 5,ad: "The Hateful Eight", image: "thehatefuleight.png", price: 23);
-    var f6 = Films(id: 6,ad: "The Pianist", image: "thepianist.png", price: 23);
-    filmList.add(f1);
-    filmList.add(f2);
-    filmList.add(f3);
-    filmList.add(f4);
-    filmList.add(f5);
-    filmList.add(f6);
-    return filmList;
+  @override
+  void initState() {
+    super.initState();
+    context.read<FilmsCubit>().load_films(); //sayfa açıldığı anda cubitteki fonksiyon çalışacak.
   }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("HomePage"),),
-      body: FutureBuilder<List<Films>>(
-        future: load_films(),
-        builder: (context, snapshot){
-          if(snapshot.hasData){
-            var filmsList = snapshot.data;
+      body: BlocBuilder<FilmsCubit, List<Films>>(
+        builder: (context, filmsList){
+          if(filmsList.isNotEmpty){
             return GridView.builder(
                 // Yatayda iki item olsun ve her item'ın genişliği1, yüksekliği 1.8 olsun.
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, childAspectRatio: 1 / 1.8),
-                itemCount: filmsList!.length,
+                itemCount: filmsList.length,
                 itemBuilder: (context, index){
                   var film = filmsList[index];
                   return GestureDetector(
